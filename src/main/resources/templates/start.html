@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CAC</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $("#onButton").click(function(){
+                $.ajax({
+                    url: "/cac/on",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify({}),
+                    success: function(result){
+                        $('#result').html(result.message);
+                        // alert(result.message);
+                    },
+                    error: function(error){
+                        console.log(error);
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+<button id="onButton">开启中央空调</button>
+<p id="result"></p>
+</body>
+</html>

@@ -1,0 +1,6 @@
+2024-05-23 01:57:34 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "USERS" not found (this database is empty); SQL statement:
+SELECT * FROM users WHERE room_number = ? AND id_number = ? [42104-214]
+2024-05-23 02:00:05 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "USERS" not found (this database is empty); SQL statement:
+SELECT * FROM users WHERE room_number = ? AND id_number = ? [42104-214]

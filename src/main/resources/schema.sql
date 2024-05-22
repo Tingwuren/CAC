@@ -1,0 +1,6 @@
+DROP TABLE IF EXISTS `users`;
+CREATE TABLE `users` (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    room_number VARCHAR(255) NOT NULL,
+    id_number VARCHAR(255) NOT NULL
+);
