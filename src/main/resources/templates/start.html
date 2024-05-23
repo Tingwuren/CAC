@@ -15,6 +15,8 @@
                     success: function(result){
                         $('#result').html(result.message);
                         // alert(result.message);
+                        // 如果中央空调成功开启，跳转到 workspace.html
+                        window.location.href = '/workspace';
                     },
                     error: function(error){
                         console.log(error);

@@ -4,3 +4,57 @@ SELECT * FROM users WHERE room_number = ? AND id_number = ? [42104-214]
 2024-05-23 02:00:05 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "USERS" not found (this database is empty); SQL statement:
 SELECT * FROM users WHERE room_number = ? AND id_number = ? [42104-214]
+2024-05-23 20:20:36 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REQUEST" not found; SQL statement:
+INSERT INTO request  ( id,
+
+count,
+type,
+state,
+fan_speed,
+duration,
+start_time,
+end_time,
+start_temp,
+end_temp,
+energy,
+cost )  VALUES  ( ?,
+
+?,
+?,
+?,
+?,
+?,
+?,
+?,
+?,
+?,
+?,
+? ) [42102-214]
+2024-05-23 20:22:35 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REQUEST" not found; SQL statement:
+INSERT INTO request  ( id,
+room_id,
+count,
+type,
+state,
+fan_speed,
+duration,
+start_time,
+end_time,
+start_temp,
+end_temp,
+energy,
+cost )  VALUES  ( ?,
+?,
+?,
+?,
+?,
+?,
+?,
+?,
+?,
+?,
+?,
+?,
+? ) [42102-214]

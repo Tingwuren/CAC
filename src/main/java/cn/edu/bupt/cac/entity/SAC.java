@@ -12,7 +12,6 @@ public class SAC {
     private String fanSpeed; // 风速（高/中/低）
 
     public Request getCurrentRequest() {
-        // ... 返回当前的温控请求 ...
         return null;
     }
 }
