@@ -54,4 +54,7 @@ public class CAC {
         isOn = b;
     }
 
+    public static String getStatus() {
+        return status ? "工作" : "待机";
+    }
 }

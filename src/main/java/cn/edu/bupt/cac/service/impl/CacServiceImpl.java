@@ -43,12 +43,12 @@ public class CacServiceImpl implements CacService {
         if (isRequestContradictWithState(request)) {
             // 请求与中央空调的状态矛盾，返回错误信息
             Response response = new Response();
+            System.out.println("请求温度超出对应模式范围");
             response.setMessage("温度必须在对应模式范围内！");
             return response;
         }
         // 从请求中获取请求参数
         Request newRequest = getRequest(request);
-        // System.out.println("newRequest: " + newRequest);
         String state = null;
 
         if (Objects.equals(newRequest.getType(), "start")) {
@@ -90,6 +90,7 @@ public class CacServiceImpl implements CacService {
         Response response = new Response();
         response.setId(newRequest.getId());
         response.setState(state);
+        response.setMessage("请求处理成功");
         return response;
     }
     private boolean isRequestContradictWithState(Request request) {

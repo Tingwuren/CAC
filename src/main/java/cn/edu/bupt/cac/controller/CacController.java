@@ -15,23 +15,27 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpSession;
+import java.util.Arrays;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/cac")
 public class CacController {
-    private final CAC cac;
     private final CacService cacService;
     @Autowired
     private UserMapper userMapper;
-    public CacController(CAC cac, CacService cacService) {
-        this.cac = cac;
+    public CacController(CacService cacService) {
         this.cacService = cacService;
     }
     // 开启中央空调
     @PostMapping(path = "/on", consumes = "application/json", produces = "application/json")
     public ResponseEntity<String> on() {
         cacService.turnOn();
+        System.out.println("中央空调已开启");
+        System.out.println("中央空调模式设置为：" + CAC.getMode());
+        System.out.println("中央空调温度范围设置为：" + Arrays.toString(CAC.getTemperatureRange()));
+        System.out.println("中央空调默认温度设置为：" + CAC.getDefaultTemperature());
+        System.out.println("中央空调当前状态为：" + CAC.getStatus());
         return ResponseEntity.ok("{\"message\": \"中央空调已开启\"}");
     }
 
@@ -69,13 +73,15 @@ public class CacController {
         double defaultTemperature = CAC.getDefaultTemperature();
 
         session.setAttribute("user", user);
+        System.out.println("登录用户：" + user);
 
         return new AuthResponse(mode, defaultTemperature);
     }
 
     @PostMapping("/request")
-    public Response handleRequest(@RequestBody Request request) {
-        System.out.println(request);
+    public Response handleRequest(@RequestBody Request request, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        System.out.println("收到来自用户" + user + "的请求：" + request);
         Response response = new Response();
         if (!CAC.getIsOn()) {
             System.out.println("中央空调未开启");

@@ -58,3 +58,9 @@ cost )  VALUES  ( ?,
 ?,
 ?,
 ? ) [42102-214]
+2024-05-24 22:13:41 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT * FROM REQUEST REQUESTS [*]REQUESTS"; SQL statement:
+SELECT * FROM REQUEST REQUESTS REQUESTS [42000-214]
+2024-05-24 22:13:46 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT * FROM REQUEST REQUESTS [*]REQUESTS REQUEST"; SQL statement:
+SELECT * FROM REQUEST REQUESTS REQUESTS REQUEST [42000-214]
