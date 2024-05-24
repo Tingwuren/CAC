@@ -48,7 +48,7 @@ public class CacServiceImpl implements CacService {
         }
         // 从请求中获取请求参数
         Request newRequest = getRequest(request);
-        System.out.println("newRequest: " + newRequest);
+        // System.out.println("newRequest: " + newRequest);
         String state = null;
 
         if (Objects.equals(newRequest.getType(), "start")) {
