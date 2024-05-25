@@ -2,10 +2,7 @@ package cn.edu.bupt.cac.controller;
 
 import cn.edu.bupt.cac.DTO.AuthRequest;
 import cn.edu.bupt.cac.DTO.AuthResponse;
-import cn.edu.bupt.cac.entity.CAC;
-import cn.edu.bupt.cac.entity.Request;
-import cn.edu.bupt.cac.entity.Response;
-import cn.edu.bupt.cac.entity.User;
+import cn.edu.bupt.cac.entity.*;
 import cn.edu.bupt.cac.mapper.UserMapper;
 import cn.edu.bupt.cac.service.CacService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,9 +76,8 @@ public class CacController {
     }
 
     @PostMapping("/request")
-    public Response handleRequest(@RequestBody Request request, HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        System.out.println("收到来自用户" + user + "的请求：" + request);
+    public Response handleRequest(@RequestBody Request request) {
+        System.out.println("收到请求：" + request);
         Response response = new Response();
         if (!CAC.getIsOn()) {
             System.out.println("中央空调未开启");

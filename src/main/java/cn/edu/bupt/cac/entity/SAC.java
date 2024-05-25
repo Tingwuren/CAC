@@ -10,8 +10,4 @@ public class SAC {
     private double defaultTemperature; // 默认温度
     private int targetTemperature; // 目标温度
     private String fanSpeed; // 风速（高/中/低）
-
-    public Request getCurrentRequest() {
-        return null;
-    }
 }

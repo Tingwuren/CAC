@@ -5,20 +5,19 @@ CREATE TABLE `users` (
     id_number VARCHAR(255) NOT NULL
 );
 
-DROP TABLE IF EXISTS `request`;
+DROP TABLE IF EXISTS `report_item`;
 
-CREATE TABLE `request` (
-    `id` INT AUTO_INCREMENT PRIMARY KEY,
-    `room_id` VARCHAR(255) NOT NULL,
-    `count` INT NOT NULL,
-    `type` VARCHAR(255) NOT NULL,
-    `state` VARCHAR(255) NOT NULL,
-    `fan_speed` VARCHAR(255) NOT NULL,
-    `duration` VARCHAR(255) NOT NULL,
-    `start_time` VARCHAR(255) NOT NULL,
-    `end_time` VARCHAR(255) NOT NULL,
-    `start_temp` DOUBLE NOT NULL,
-    `end_temp` DOUBLE NOT NULL,
-    `energy` DOUBLE NOT NULL,
-    `cost` DOUBLE NOT NULL
-);
+CREATE TABLE report_item (
+    id bigint AUTO_INCREMENT NOT NULL,
+    room_id VARCHAR(255) NOT NULL,
+    state VARCHAR(255) NOT NULL,
+    fan_speed VARCHAR(255) NOT NULL,
+    duration VARCHAR(255),
+    start_time VARCHAR(255),
+    end_time VARCHAR(255),
+    start_temp DOUBLE,
+    end_temp DOUBLE,
+    energy DOUBLE,
+    cost DOUBLE,
+    PRIMARY KEY (id)
+)

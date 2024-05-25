@@ -21,13 +21,13 @@ public class CAC {
     @Getter
     private static List<Room> rooms; // 所有房间的列表
     @Getter
-    private static List<Request> currentRequests; // 当前正在处理服务列表，最多3个
+    private static List<ReportItem> currentReportItems; // 当前正在处理服务列表，最多3个
     @Getter
-    private static List<Request> waitingRequests; // 等待处理的请求列表，无上限
+    private static List<ReportItem> waitingReportItems; // 等待处理的请求列表，无上限
 
     public CAC() {
-        currentRequests = new ArrayList<>();
-        waitingRequests = new ArrayList<>();
+        currentReportItems = new ArrayList<>();
+        waitingReportItems = new ArrayList<>();
         rooms = new ArrayList<>();
     }
 

@@ -13,5 +13,5 @@ public class Report {
     private String type; // 报告类型（日报表/周报表/月报表）
     private Long roomId; // 房间ID
     private int SCcnt; // 对应从控机开关机次数
-    private List<Request> requests; // 请求列表
+    private List<ReportItem> reportItems; // 请求列表
 }
