@@ -86,4 +86,9 @@ public class CacController {
         }
         return cacService.handleRequest(request);
     }
+
+    // Todo: 实时计算每个房间所消耗的能量和支付金额（需求11）
+
+    // Todo: 根据房间ID和报表类型（日、周、月）给出报表（需求12）
+
 }
