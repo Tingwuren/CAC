@@ -13,11 +13,14 @@ public class CAC {
     private static boolean status; // 中央空调状态（工作/待机）
     @Getter
     private static String mode; // 工作模式（制冷/供暖）
-    private static float frequency = 1;  //刷新频率 例如 frequency = 2 代表每秒钟刷新2次 用于监测各房间的状态
+    @Getter
+    private static int frequency;  //刷新频率（每分钟刷新次数） 例如 frequency = 12 代表每分钟刷新12次 用于监测各房间的状态
     @Getter
     private static int[] temperatureRange; // 温度范围
     @Getter
-    private static double defaultTemperature; // 对应工作模式的缺省温度值
+    private static int defaultTemperature; // 对应工作模式的缺省温度值
+    @Getter
+    private static String defaultFanSpeed; // 缺省风速
     @Getter
     private static List<Room> rooms; // 所有房间的列表
     @Getter
@@ -57,4 +60,13 @@ public class CAC {
     public static String getStatus() {
         return status ? "工作" : "待机";
     }
+
+    public static void setFrequency(int i) {
+        frequency = i;
+    }
+
+    public static void setDefaultFanSpeed(String speed) {
+        defaultFanSpeed = speed;
+    }
+
 }

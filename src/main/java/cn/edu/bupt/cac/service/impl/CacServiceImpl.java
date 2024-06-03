@@ -35,6 +35,10 @@ public class CacServiceImpl implements CacService {
         } else {
             CAC.setMode("cooling"); // 如果是其他月份，设置为制冷模式
         }
+
+        CAC.setDefaultFanSpeed("low");
+        // 设置默认刷新频率
+        CAC.setFrequency(12);
     }
 
     @Override

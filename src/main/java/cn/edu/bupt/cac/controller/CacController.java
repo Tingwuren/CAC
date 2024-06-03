@@ -55,7 +55,7 @@ public class CacController {
     }
 
     @PostMapping("/auth")
-    public AuthResponse handleAuth(@RequestBody AuthRequest request, HttpSession session) {
+    public AuthResponse handleAuth(@RequestBody AuthRequest request) {
         // 验证房间号和身份证号
         if (request.getRoomID().isEmpty() || request.getIdNumber().isEmpty()) {
             throw new IllegalArgumentException("房间号和身份证号不能为空");
@@ -65,14 +65,14 @@ public class CacController {
         if (user == null) {
             throw new IllegalArgumentException("房间号或身份证号无效");
         }
-        // 获取工作模式和缺省工作温度
+        // 获取工作模式、缺省工作温度、默认风速、默认频率
         String mode = CAC.getMode();
-        double defaultTemperature = CAC.getDefaultTemperature();
+        int defaultTemperature = CAC.getDefaultTemperature();
+        int frequency = CAC.getFrequency();
+        String defaultFanSpeed = CAC.getDefaultFanSpeed();
 
-        session.setAttribute("user", user);
-        System.out.println("登录用户：" + user);
 
-        return new AuthResponse(mode, defaultTemperature);
+        return new AuthResponse(mode, defaultTemperature, defaultFanSpeed, frequency);
     }
 
     @PostMapping("/request")
