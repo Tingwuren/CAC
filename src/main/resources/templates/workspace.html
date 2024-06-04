@@ -3,8 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <title>CAC</title>
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 5px;
+        }
+    </style>
 </head>
 <body>
+<form id="frequencyForm">
+    <label for="frequency">刷新频率:</label>
+    <input type="number" id="frequency" name="frequency" min="1" max="12" step="1">
+    <input type="submit" value="设置">
+</form>
+<table id="roomState"></table>
+<form id="reportForm">
+    <label for="roomId">房间ID:</label>
+    <input type="text" id="roomId" name="roomId">
+    <label for="type">类型:</label>
+    <input type="text" id="type" name="type">
+    <input type="submit" value="获取报告">
+</form>
 
+<div id="reportInfo"></div>
+<table id="report"></table>
+
+<script>
+    document.getElementById('frequencyForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        var frequency = document.getElementById('frequency').value;
+        fetch('/cac/setFrequency', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ frequency: frequency }),
+        })
+            .then(response => response.text())
+            .then(data => {
+                alert(data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    });
+
+    document.getElementById('reportForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        var roomId = document.getElementById('roomId').value;
+        var type = document.getElementById('type').value;
+        fetch('/cac/getReport?roomId=' + roomId + '&type=' + type, {
+            method: 'GET',
+        })
+            .then(response => response.json())
+            .then(data => {
+                var info = document.getElementById('reportInfo');
+                info.innerHTML = '房间号: ' + data.roomId + ', 开关次数: ' + data.count + ', 总费用: ' + data.totalCost;
+
+                var table = document.getElementById('report');
+                table.innerHTML = '';
+                var header = Object.keys(data.reportItems[0]).filter(h => h !== 'state');
+                var tr = document.createElement('tr');
+                header.forEach(function(h) {
+                    var th = document.createElement('th');
+                    th.textContent = h;
+                    tr.appendChild(th);
+                });
+                table.appendChild(tr);
+                data.reportItems.forEach(function(item) {
+                    var tr = document.createElement('tr');
+                    header.forEach(function(h) {
+                        var td = document.createElement('td');
+                        td.textContent = item[h];
+                        tr.appendChild(td);
+                    });
+                    table.appendChild(tr);
+                });
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    });
+    function updateRoomState() {
+        fetch('/cac/getRoomState', {
+            method: 'GET',
+        })
+            .then(response => response.json())
+            .then(data => {
+                var table = document.getElementById('roomState');
+                table.innerHTML = '';
+                var header = Object.keys(data[0]);
+                var tr = document.createElement('tr');
+                header.forEach(function(h) {
+                    var th = document.createElement('th');
+                    th.textContent = h;
+                    tr.appendChild(th);
+                });
+                table.appendChild(tr);
+                data.forEach(function(item) {
+                    var tr = document.createElement('tr');
+                    header.forEach(function(h) {
+                        var td = document.createElement('td');
+                        td.textContent = item[h];
+                        tr.appendChild(td);
+                    });
+                    table.appendChild(tr);
+                });
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    }
+
+    updateRoomState();
+    setInterval(updateRoomState, 5000);
+</script>
 </body>
 </html>

@@ -1,8 +1,11 @@
-DROP TABLE IF EXISTS `users`;
-CREATE TABLE `users` (
+DROP TABLE IF EXISTS `user`;
+CREATE TABLE `user` (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    room_number VARCHAR(255) NOT NULL,
-    id_number VARCHAR(255) NOT NULL
+    room_id VARCHAR(255) NOT NULL,
+    id_number VARCHAR(255) NOT NULL,
+    count INT,
+    energy DOUBLE,
+    cost DOUBLE
 );
 
 DROP TABLE IF EXISTS `report_item`;

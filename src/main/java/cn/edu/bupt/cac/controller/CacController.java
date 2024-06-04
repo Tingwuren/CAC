@@ -2,17 +2,20 @@ package cn.edu.bupt.cac.controller;
 
 import cn.edu.bupt.cac.DTO.AuthRequest;
 import cn.edu.bupt.cac.DTO.AuthResponse;
+import cn.edu.bupt.cac.DTO.StateRequest;
+import cn.edu.bupt.cac.DTO.StateResponse;
 import cn.edu.bupt.cac.entity.*;
 import cn.edu.bupt.cac.mapper.UserMapper;
 import cn.edu.bupt.cac.service.CacService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import javax.servlet.http.HttpSession;
+import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -87,8 +90,66 @@ public class CacController {
         return cacService.handleRequest(request);
     }
 
-    // Todo: 实时计算每个房间所消耗的能量和支付金额（需求11）
+    // 实时计算每个房间所消耗的能量和支付金额（需求11）
+    @PostMapping("/state")
+    public StateResponse getState(@RequestBody StateRequest request) {
 
-    // Todo: 根据房间ID和报表类型（日、周、月）给出报表（需求12）
+        String roomId = request.getRoomID();
+        BigDecimal temperature = request.getTemperature();
+        boolean on = request.isOn();
+        cacService.setTemperatureByRoomId(roomId, temperature);
+        cacService.setOnByRoomId(roomId, on);
 
+        StateResponse response = new StateResponse();
+        response.setFrequency(CAC.getFrequency());
+        BigDecimal energy = cacService.getEnergyByRoomId(roomId);
+        response.setEnergy(energy);
+        BigDecimal cost = cacService.getCostByRoomId(roomId);
+        response.setCost(cost);
+
+        userMapper.updateEnergyAndCostByRoomId(roomId, energy, cost);
+
+        System.out.println("收到状态请求：" + request + "，返回状态响应：" + response);
+        return response;
+    }
+
+    // 配置刷新频率（需求8）
+    @PostMapping("/setFrequency")
+    public String setFrequency(@RequestBody Map<String, Integer> body) {
+        if (!CAC.getIsOn()) {
+            return "中央空调未开启";
+        }
+        int frequency = body.get("frequency");
+        CAC.setFrequency(frequency);
+        return "中央空调的刷新频率已设置为 " + frequency;
+    }
+
+    @GetMapping("/getFrequency")
+    public Integer getFrequency() {
+        if (!CAC.getIsOn()) {
+            return -1;
+        }
+        int frequency = CAC.getFrequency();
+        // System.out.println("中央空调的刷新频率为：" + frequency);
+        return frequency;
+    }
+
+    // 获取各个房间的温度、开关机状态、服务状态（需求8）
+    @GetMapping("/getRoomState")
+    public List<RoomState> getRoomState() {
+        if (!CAC.getIsOn()) {
+            throw new IllegalArgumentException("中央空调未开启");
+        }
+        return cacService.getRoomState();
+    }
+
+
+    // 根据房间ID和报表类型（日、周、月）给出报表（需求12）
+    @GetMapping("/getReport")
+    public Report getReport(@RequestParam String roomId, @RequestParam String type) {
+        if (!CAC.getIsOn()) {
+            throw new IllegalArgumentException("中央空调未开启");
+        }
+        return cacService.getReportByRoomId(roomId, type);
+    }
 }
