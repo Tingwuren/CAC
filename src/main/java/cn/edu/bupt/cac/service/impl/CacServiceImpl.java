@@ -122,9 +122,21 @@ public class CacServiceImpl implements CacService {
                 // Todo: 进行调度，选择一个reportItem进服务队列（需求13）
 
                 // 否则将实例添加到等待队列
-                CAC.getWaitingReportItems().add(newReportItem);
-                System.out.println("等待队列：" + CAC.getWaitingReportItems());
-                newReportItem.setState("waiting");
+                ReportItem reportItem = getWaiting(roomId);
+                if (reportItem != null) {
+                    // 如果等待队列有房间Id为roomId的ReportItem，则将其移出等待队列
+                    CAC.getWaitingReportItems().remove(reportItem);
+                    System.out.println("等待队列：" + CAC.getWaitingReportItems());
+                    // 将新的 ReportItem 实例添加到等待队列中
+                    CAC.getWaitingReportItems().add(newReportItem);
+                    System.out.println("等待队列：" + CAC.getWaitingReportItems());
+                    newReportItem.setState("waiting");
+                } else {
+                    // 如果等待队列没有房间Id为roomId的ReportItem，则将新的 ReportItem 实例添加到等待队列中
+                    CAC.getWaitingReportItems().add(newReportItem);
+                    System.out.println("等待队列：" + CAC.getWaitingReportItems());
+                    newReportItem.setState("waiting");
+                }
                 state = "waiting";
                 setStateByRoomId(roomId, state);
             }
@@ -196,6 +208,14 @@ public class CacServiceImpl implements CacService {
     }
     private ReportItem getCurrent(String roomID) {
         Optional<ReportItem> optionalReportItem = CAC.getCurrentReportItems().stream()
+                .filter(item -> roomID.equals(item.getRoomId()))
+                .findFirst();
+
+        return optionalReportItem.orElse(null);
+    }
+
+    private ReportItem getWaiting(String roomID) {
+        Optional<ReportItem> optionalReportItem = CAC.getWaitingReportItems().stream()
                 .filter(item -> roomID.equals(item.getRoomId()))
                 .findFirst();
 

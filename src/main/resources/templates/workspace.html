@@ -4,22 +4,64 @@
     <meta charset="UTF-8">
     <title>CAC</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        form {
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            border-radius: 5px;
+        }
         table {
             border-collapse: collapse;
+            width: 80%;
+            margin: 20px auto;  // 设置左右外边距为自动
         }
         th, td {
             border: 1px solid black;
             padding: 5px;
+            text-align: left;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            float: right;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        #reportInfo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
     </style>
 </head>
 <body>
+<table id="roomState"></table>
+
 <form id="frequencyForm">
     <label for="frequency">刷新频率:</label>
     <input type="number" id="frequency" name="frequency" min="1" max="12" step="1">
     <input type="submit" value="设置">
 </form>
-<table id="roomState"></table>
+
 <form id="reportForm">
     <label for="roomId">房间ID:</label>
     <input type="text" id="roomId" name="roomId">
@@ -29,9 +71,8 @@
         <option value="week">周</option>
         <option value="month">月</option>
     </select>
-    <input type="submit" value="获取报告">
+    <input type="submit" value="获取报表">
 </form>
-
 <div id="reportInfo"></div>
 <table id="report"></table>
 
@@ -92,6 +133,13 @@
             });
     });
     function updateRoomState() {
+        var headerMap = {
+            roomID: '房间 ID',
+            temperature: '房间当前温度',
+            state: '服务状态',
+            on: '开关状态'
+        };
+
         fetch('/cac/getRoomState', {
             method: 'GET',
         })
@@ -103,7 +151,7 @@
                 var tr = document.createElement('tr');
                 header.forEach(function(h) {
                     var th = document.createElement('th');
-                    th.textContent = h;
+                    th.textContent = headerMap[h] || h;  // 使用映射对象将英文表头转换为中文
                     tr.appendChild(th);
                 });
                 table.appendChild(tr);
