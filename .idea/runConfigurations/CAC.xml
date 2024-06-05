@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="CAC" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <module name="CAC" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="cn.edu.bupt.cac.CacApplication" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
