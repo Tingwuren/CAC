@@ -10,10 +10,7 @@ import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class CacServiceImpl implements CacService {
@@ -63,6 +60,24 @@ public class CacServiceImpl implements CacService {
     @Override
     public void turnOff() {
         CAC.setIsOn(false);
+
+        List<String> roomIdsToRemove = new ArrayList<>();
+        for (ReportItem reportItem : CAC.getCurrentReportItems()) {
+            if ("processing".equals(reportItem.getState())) {
+                String roomId = reportItem.getRoomId();
+                BigDecimal temperature = getTemperatureByRoomId(roomId);
+                roomIdsToRemove.add(roomId);
+            }
+        }
+
+        for (String roomId : roomIdsToRemove) {
+            removeFromCurrent(roomId, getTemperatureByRoomId(roomId));
+        }
+        CAC.setStatus(false); // 状态变为待机
+        CAC.setMode(null); // 清空工作模式
+        CAC.setDefaultFanSpeed(null); // 清空默认风速
+        CAC.setFrequency(0); // 清空刷新频率
+        CAC.getRooms().clear(); // 清空房间列表
     }
 
     @Override
@@ -79,6 +94,7 @@ public class CacServiceImpl implements CacService {
         String type = request.getType();
         String roomId = request.getRoomId();
         String fanSpeed = request.getFanSpeed();
+        BigDecimal temperature = request.getTemperature();
         String state = null;
 
         ReportItem newReportItem = new ReportItem();
@@ -98,14 +114,14 @@ public class CacServiceImpl implements CacService {
                 ReportItem reportItem = getCurrent(roomId);
                 if (reportItem != null) {
                     // 如果服务队列有房间Id为roomId的ReportItem，则将其移出服务队列
-                    removeFromCurrent(roomId);
+                    removeFromCurrent(roomId, temperature);
                     System.out.println("服务队列：" + CAC.getCurrentReportItems());
                     // 将新的 ReportItem 实例添加到当前服务列表中
-                    addToCurrent(roomId,fanSpeed);
+                    addToCurrent(roomId,fanSpeed,temperature);
                     System.out.println("服务队列：" + CAC.getCurrentReportItems());
                 } else {
                     // 如果服务队列没有房间Id为roomId的ReportItem，则将新的 ReportItem 实例添加到当前服务列表中
-                    addToCurrent(roomId,fanSpeed);
+                    addToCurrent(roomId,fanSpeed,temperature);
                     System.out.println("服务队列：" + CAC.getCurrentReportItems());
                 }
                 state = "processing";
@@ -113,14 +129,6 @@ public class CacServiceImpl implements CacService {
             }
             // 否则将其加入等待队列
             else {
-                // Todo: 进行调度，选择一个reportItem出服务队列，进入等待队列（需求13）
-
-                // Todo: 给进入等待的房间发送waiting响应
-
-                // Todo: 将进入等待的reportItem结束，添加到数据库
-
-                // Todo: 进行调度，选择一个reportItem进服务队列（需求13）
-
                 // 否则将实例添加到等待队列
                 ReportItem reportItem = getWaiting(roomId);
                 if (reportItem != null) {
@@ -143,16 +151,17 @@ public class CacServiceImpl implements CacService {
         }
         else if (Objects.equals(type, "stop")) {
             // 从服务队列中删除reportItem实例
-            removeFromCurrent(roomId);
+            removeFromCurrent(roomId, temperature);
             System.out.println("服务队列：" + CAC.getCurrentReportItems());
             state = "finished";
             setStateByRoomId(roomId, state);
-
-            // Todo: 启动调度，当有请求完成时，从等待队列中选择一个请求进行处理
-
         }
 
-        // Todo: 检查所有房间都没有温控请求，中央空调的状态回到待机状态
+        // 检查所有房间都没有温控请求，中央空调的状态回到待机状态
+        if (CAC.getCurrentReportItems().isEmpty()) {
+            CAC.setStatus(false);
+            System.out.println("中央空调正在待机");
+        }
 
         // 返回处理结果
         Response response = new Response();
@@ -222,7 +231,7 @@ public class CacServiceImpl implements CacService {
         return optionalReportItem.orElse(null);
     }
 
-    private void addToCurrent(String roomId, String fanSpeed) {
+    private void addToCurrent(String roomId, String fanSpeed, BigDecimal temperature) {
         ReportItem newReportItem = new ReportItem();
         newReportItem.setRoomId(roomId);
         newReportItem.setState("processing");
@@ -230,8 +239,8 @@ public class CacServiceImpl implements CacService {
         newReportItem.setStartTime(currentTime);
 
         // 设置reportItem的房间开始温度
-        BigDecimal startTemp = getTemperatureByRoomId(roomId);
-        newReportItem.setStartTemp(startTemp);
+        // BigDecimal startTemp = getTemperatureByRoomId(roomId);
+        newReportItem.setStartTemp(temperature);
 
         // 设置reportItem的风速属性
         newReportItem.setFanSpeed(fanSpeed);
@@ -240,9 +249,12 @@ public class CacServiceImpl implements CacService {
 
         System.out.println("开始送风，房间号："+ newReportItem.getRoomId());
     }
-    private void removeFromCurrent(String roomId) {
+    private void removeFromCurrent(String roomId, BigDecimal temperature) {
         // 从服务队列currentReportItems中选择房间号为roomId的reportItem
         ReportItem reportItem = getCurrent(roomId);
+        if (reportItem == null) {
+            return;
+        }
         // 有来自从控机的温控关闭请求，将reportItem实例状态变为 finished
         reportItem.setState("finished");
 
@@ -256,8 +268,8 @@ public class CacServiceImpl implements CacService {
         reportItem.setDuration(String.valueOf(durationInSeconds));
 
         // 设置reportItem的房间结束温度
-        BigDecimal endTemp = getTemperatureByRoomId(roomId);
-        reportItem.setEndTemp(endTemp);
+        // BigDecimal endTemp = getTemperatureByRoomId(roomId);
+        reportItem.setEndTemp(temperature);
 
         // 计算reportItem消耗的能量和费用（需求10）
         BigDecimal energy = calculateEnergy(reportItem.getFanSpeed(), durationInSeconds);

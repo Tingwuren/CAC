@@ -59,6 +59,9 @@ public class CacController {
 
     @PostMapping("/auth")
     public AuthResponse handleAuth(@RequestBody AuthRequest request) {
+        if (!CAC.getIsOn()) {
+            throw new IllegalArgumentException("中央空调未开启");
+        }
         // 验证房间号和身份证号
         if (request.getRoomID().isEmpty() || request.getIdNumber().isEmpty()) {
             throw new IllegalArgumentException("房间号和身份证号不能为空");
@@ -127,7 +130,7 @@ public class CacController {
     @GetMapping("/getFrequency")
     public Integer getFrequency() {
         if (!CAC.getIsOn()) {
-            return -1;
+            return 0;
         }
         int frequency = CAC.getFrequency();
         // System.out.println("中央空调的刷新频率为：" + frequency);

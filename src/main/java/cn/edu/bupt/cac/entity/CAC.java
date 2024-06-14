@@ -34,7 +34,7 @@ public class CAC {
         rooms = new ArrayList<>();
     }
 
-    public static void setStatus(boolean status) {
+    public static void setStatus(Boolean status) {
         CAC.status = status;
     }
 
